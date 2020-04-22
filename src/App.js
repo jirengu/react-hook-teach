@@ -1,34 +1,33 @@
 import React, {useState, useEffect} from 'react';
-import './App.css';
-
 
 function Counter() {
-  const [count, setCount] = useState(0)
-  const [age, setAge] = useState(20)
+  const [count, setCount] = useState(0);
+  const [age, setAge] = useState(20);
 
   // 相当于 componentDidMount 和 componentDidUpdate:
   /*
   useEffect(() => {
-    console.log(`You clicked ${count} times`)
-  }) //监控所有
+    console.log(`You clicked ${count} times`);
+  }); //监控所有state
   */
 
-  /*
+  
   useEffect(() => {
-    console.log('挂载和更新时执行')
+    console.log('首次挂载和更新count执行')
     return () => {
-      console.log('执行清除——更新和卸载时执行')
+      console.log('状态更新和卸载组件时执行')
     }
-  }, [count])  //只监控count
-  */
+  }, [count])  //只监控count状态
+  
 
+  
   useEffect(() => {
-    console.log('挂载和更新时执行')
+    console.log('首次挂载时执行');
     return () => {
-      console.log('执行清除——更新和卸载时执行')
-    }
-  }, [])   //都不监控，只在第一次挂载时执行一次
-
+      console.log('卸载时执行');
+    };
+  }, []);   //都不监控，只在第一次挂载时执行一次
+  
 
   return (
     <div className="App">
@@ -42,7 +41,7 @@ function Counter() {
 
 
 function App() {
-  const [isShow, setIsShow] = useState(true)
+  const [isShow, setIsShow] = useState(true);
 
   return (
     <div className="App">
