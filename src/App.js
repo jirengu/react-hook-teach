@@ -22,7 +22,7 @@ function useState(initValue) {
 
 
 //简易版的useState 与 useEffect
-/*
+
 let state;
 function useState(initValue) {
   state = state || initValue;
@@ -42,36 +42,6 @@ function useEffect(callback, deps) {
     oldDeps = deps;
   }
 }
-
-
-*/
-
-
-//多状态
-
-let states = [];
-let cursor = 0;
-
-function useState(initValue) {
-  states[cursor] = states[cursor] || initValue;
-  function setState(newState) {
-    states[cursor] = newState;
-    render();
-  }
-  return [states[cursor++], setState];
-}
-
-function useEffect(callback, deps) {
-  let oldDeps = states[cursor];
-  const hasChangedDeps = oldDeps ? !deps.every((el, i) => el === oldDeps[i]) : true;
-  if(!deps || hasChangedDeps) {
-    callback();
-    states[cursor] = deps;
-  }
-  cursor++
-}
-
-
 
 
 function App() {
