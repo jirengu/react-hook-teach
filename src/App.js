@@ -3,10 +3,8 @@ import ReactDOM from 'react-dom';
 
 //参考文章 https://github.com/brickspert/blog/issues/26
 
-let memoizedState = []; 
-let cursor = 0; 
-window.memoizedState = memoizedState;
-window.cursor = cursor;
+let memoizedState = []; // hooks 存放在这个数组
+let cursor = 0; // 当前 memoizedState 下标
 
 function render() {
   cursor = 0;
@@ -40,12 +38,10 @@ function useEffect(callback, depArray) {
   cursor++;
 }
 
-
-
-
 function App() {
+  console.log('render app')
   const [count, setCount] = useState(0);
-  const [name, setName] = useState('jirengu'); 
+  const [name, setName] = useState('hunger');
 
   useEffect(() => {
     console.log('update', count)
@@ -56,7 +52,7 @@ function App() {
       <p>You clicked {count} times</p>
       <button onClick={() => setCount(count + 1)}> Add count</button> 
       <p>You name is {name}</p>
-      <button onClick={() => setName(name+'!')}> Modify name</button>   
+      <button onClick={() => setName(name + '!')}> Set name</button>   
     </div>
   );
 }
