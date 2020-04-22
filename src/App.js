@@ -1,82 +1,51 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+//参考文章 https://github.com/brickspert/blog/issues/26
+
+let memoizedState = []; 
+let cursor = 0; 
+window.memoizedState = memoizedState;
+window.cursor = cursor;
+
 function render() {
+  cursor = 0;
   ReactDOM.render(
     <App />,
     document.getElementById('root')
   );
 }
 
-//初尝试
-/*
-function useState(initValue) {
-  let state = initValue;
+
+function useState(initialValue) {
+  memoizedState[cursor] = memoizedState[cursor] || initialValue;
+  const currentCursor = cursor;
   function setState(newState) {
-    state = newState;
+    memoizedState[currentCursor] = newState;
     render();
   }
-  return [state, setState];
-}
-*/
-
-
-//简易版的useState 与 useEffect
-/*
-let state;
-function useState(initValue) {
-  state = state || initValue;
-  function setState(newState) {
-    state = newState;
-    render();
-  }
-  return [state, setState];
+  return [memoizedState[cursor++], setState]; // 返回当前 state，并把 cursor 加 1
 }
 
-
-let oldDeps;
-function useEffect(callback, deps) {
-  const hasChangedDeps = oldDeps ? !deps.every((el, i) => el === oldDeps[i]) : true;
-  if(!deps || hasChangedDeps ) {
+function useEffect(callback, depArray) {
+  const hasNoDeps = !depArray;
+  const deps = memoizedState[cursor];
+  const hasChangedDeps = deps
+    ? !depArray.every((el, i) => el === deps[i])
+    : true;
+  if (hasNoDeps || hasChangedDeps) {
     callback();
-    oldDeps = deps;
+    memoizedState[cursor] = depArray;
   }
-}
-
-
-*/
-
-
-//多状态
-
-let states = [];
-let cursor = 0;
-
-function useState(initValue) {
-  states[cursor] = states[cursor] || initValue;
-  function setState(newState) {
-    states[cursor] = newState;
-    render();
-  }
-  return [states[cursor++], setState];
-}
-
-function useEffect(callback, deps) {
-  let oldDeps = states[cursor];
-  const hasChangedDeps = oldDeps ? !deps.every((el, i) => el === oldDeps[i]) : true;
-  if(!deps || hasChangedDeps) {
-    callback();
-    states[cursor] = deps;
-  }
-  cursor++
+  cursor++;
 }
 
 
 
 
 function App() {
-  console.log('render app')
   const [count, setCount] = useState(0);
+  const [name, setName] = useState('jirengu'); 
 
   useEffect(() => {
     console.log('update', count)
@@ -85,7 +54,9 @@ function App() {
   return (
     <div className="App">
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}> Add count</button>   
+      <button onClick={() => setCount(count + 1)}> Add count</button> 
+      <p>You name is {name}</p>
+      <button onClick={() => setName(name+'!')}> Modify name</button>   
     </div>
   );
 }
