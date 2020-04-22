@@ -1,56 +1,94 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-function Counter() {
+function render() {
+  ReactDOM.render(
+    <App />,
+    document.getElementById('root')
+  );
+}
+
+//初尝试
+/*
+function useState(initValue) {
+  let state = initValue;
+  function setState(newState) {
+    state = newState;
+    render();
+  }
+  return [state, setState];
+}
+*/
+
+
+//简易版的useState 与 useEffect
+/*
+let state;
+function useState(initValue) {
+  state = state || initValue;
+  function setState(newState) {
+    state = newState;
+    render();
+  }
+  return [state, setState];
+}
+
+
+let oldDeps;
+function useEffect(callback, deps) {
+  const hasChangedDeps = oldDeps ? !deps.every((el, i) => el === oldDeps[i]) : true;
+  if(!deps || hasChangedDeps ) {
+    callback();
+    oldDeps = deps;
+  }
+}
+
+
+*/
+
+
+//多状态
+
+let states = [];
+let cursor = 0;
+
+function useState(initValue) {
+  states[cursor] = states[cursor] || initValue;
+  function setState(newState) {
+    states[cursor] = newState;
+    render();
+  }
+  return [states[cursor++], setState];
+}
+
+function useEffect(callback, deps) {
+  let oldDeps = states[cursor];
+  const hasChangedDeps = oldDeps ? !deps.every((el, i) => el === oldDeps[i]) : true;
+  if(!deps || hasChangedDeps) {
+    callback();
+    states[cursor] = deps;
+  }
+  cursor++
+}
+
+
+
+
+function App() {
+  console.log('render app')
   const [count, setCount] = useState(0);
-  const [age, setAge] = useState(20);
 
-  // 相当于 componentDidMount 和 componentDidUpdate:
-  /*
   useEffect(() => {
-    console.log(`You clicked ${count} times`);
-  }); //监控所有state
-  */
-
-  
-  useEffect(() => {
-    console.log('首次挂载和更新count执行')
-    return () => {
-      console.log('状态更新和卸载组件时执行')
-    }
-  }, [count])  //只监控count状态
-  
-
-  
-  useEffect(() => {
-    console.log('首次挂载时执行');
-    return () => {
-      console.log('卸载时执行');
-    };
-  }, []);   //都不监控，只在第一次挂载时执行一次
-  
+    console.log('update', count)
+  }, [count])
 
   return (
     <div className="App">
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}> Add count</button>
-      <p>You are {age} years old!</p>
-      <button onClick={() => setAge(age + 1)}> Add age </button>     
+      <button onClick={() => setCount(count + 1)}> Add count</button>   
     </div>
   );
 }
 
-
-function App() {
-  const [isShow, setIsShow] = useState(true);
-
-  return (
-    <div className="App">
-      <button onClick={() => setIsShow(!isShow)}>显示/隐藏Counter</button>
-      {
-        isShow && <Counter/>
-      }
-    </div>
-  )
-}
 
 export default App;
